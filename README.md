@@ -144,8 +144,70 @@ TaskHandle_t Tarea2;
 ```
 Aquestes tasques s'utilitzen per controlar les tasques creades per FreeRTOS.
 
-`Declaració del LED`
+`3.Declaració del LED`
 ```cpp
 const int led = 27;
 ```
 Defineix el pin 27 com el pin al que està conectat el LED.
+
+`4.Tarea1codigo`
+```cpp
+void Tarea1codigo(void * parameter) {
+    Serial.print("Tarea 1 is running on");
+    Serial.println(xPortGetCoreID());
+
+    for (;;) {
+        Serial.print(" Led encendido ");
+        digitalWrite(led, HIGH);
+        vTaskDelay(1000);
+    }
+}
+```
+- **'Serial.print("Tarea 1 is running on"); Serial.println(xPortGetCoreID());:'** Mostra l'ID del nucli en el que s'esta executant la tasca 1.
+- **'for(;;):'** Bucle infinit.
+- **'digitalWrite(led, HIGH);:'** Encen el LED.
+- **'vTaskDelay(1000);:'** Fa una pausa de 1000 milisegons (1 segon).
+
+`5.Tarea2codigo`
+```cpp
+void Tarea2codigo(void * parameter) {
+    Serial.print("Tarea 2 is running on: ");
+    Serial.println(xPortGetCoreID());
+
+    for (;;) {
+        Serial.print(" Led apagado ");
+        digitalWrite(led, LOW);
+        vTaskDelay(1000);
+    }
+}
+```
+- **'Serial.print("Tarea 2 is running on: "); Serial.println(xPortGetCoreID());:'** Mostra l'ID del nucli en el que s'esta executant la tasca 2.
+- **'for(;;):'** Bucle infinit.
+- **'digitalWrite(led, LOW);:'** Apaga el LED.
+- **'vTaskDelay(1000);:'** Fa una pausa de 1000 milisegons (1 segon).
+
+`6.Setup`
+```cpp
+void setup() { 
+    Serial.begin(115200); 
+    pinMode(led, OUTPUT);
+
+    xTaskCreatePinnedToCore(Tarea1codigo, "Tarea1", 10000, NULL, 1, &Tarea1, 1);
+    vTaskDelay(500);
+
+    xTaskCreatePinnedToCore(Tarea2codigo, "Tarea2", 10000, NULL, 1, &Tarea2, 0);
+    vTaskDelay(500);
+}
+```
+- **'Serial.begin(115200);:'** Inicia la comunicació serial a 115200 bauds.
+- **'pinMode(led, OUTPUT);:'** Configura el pin del LED com sortida.
+- **'xTaskCreatePinnedToCore(Tarea1codigo, "Tarea1", 10000, NULL, 1, &Tarea1, 1);:'** Crea 'Tarea1' y la fixa al núcli 1. La tasca executa la funció 'Tarea1codigo'.
+- **'vTaskDelay(500);:'** Fa una pausa durant 500 milisegons.
+- **'xTaskCreatePinnedToCore(Tarea2codigo, "Tarea2", 10000, NULL, 1, &Tarea2, 0);:'** Crea 'Tarea2' y la fixa al núcli 0. La tasca executa la funció 'Tarea2codigo'.
+- **'vTaskDelay(500);:'** Fa una pausa durant 500 milisegons.
+
+`7.Loop`
+```cpp
+void loop() {}
+```
+El bucle principal està buit perquè les tasques creades prèviament funcionen pel seu compte i de manera contínua.
