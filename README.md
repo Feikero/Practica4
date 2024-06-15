@@ -74,5 +74,78 @@ void anotherTask(void * parameter) {
     vTaskDelete(NULL); 
 }
 ```
-**'for(;;):'** Un bucle infinit.
-**'Serial.println("this is another Task");:'** Mostra per pantalla el missatge "this is another Task" en el monitor serial.
+- **'for(;;):'** Un bucle infinit.
+- **'Serial.println("this is another Task");:'** Mostra per pantalla el missatge "this is another Task" en el monitor serial.
+
+## Part B
+### Codi en línea
+```cpp
+#include <Arduino.h>
+
+// put function declarations here:
+TaskHandle_t Tarea1;
+TaskHandle_t Tarea2;
+
+const int led=27;
+
+void Tarea1codigo(void * parameter)
+{
+Serial.print("Tarea 1 is running on");
+Serial.println(xPortGetCoreID());
+ 
+
+for(;;)
+  {
+    Serial.print(" Led encendido ");
+    digitalWrite (led, HIGH);
+    vTaskDelay(1000);
+
+  }
+}
+void Tarea2codigo(void * parameter)
+{
+Serial.print("Tarea 2 is running on: ");
+Serial.println(xPortGetCoreID());
+ 
+
+for(;;)
+  {
+  Serial.print(" Led apagado ");
+  digitalWrite (led, LOW);
+  vTaskDelay(1000);
+
+  }
+}
+void setup() 
+{ 
+Serial.begin(115200); 
+pinMode(led,OUTPUT);
+
+xTaskCreatePinnedToCore( Tarea1codigo,"Tarea1", 10000,NULL,1,&Tarea1,1);
+vTaskDelay(500);
+
+xTaskCreatePinnedToCore( Tarea2codigo,"Tarea2", 10000,NULL,1,&Tarea2,0);
+vTaskDelay(500);
+} 
+
+void loop(){}
+```
+### Explicació del codi
+`1.Inclusió llibreries` 
+```cpp
+#include <Arduino.h>
+```
+Aquí s'inclou la llibreria d'Arduino.h la qual ens permet utilitzar les funcions bàsiques del microcontrolador.
+
+`2.Declaració dels TaskHandles` 
+```cpp
+TaskHandle_t Tarea1;
+TaskHandle_t Tarea2;
+```
+Aquestes tasques s'utilitzen per controlar les tasques creades per FreeRTOS.
+
+`Declaració del LED`
+```cpp
+const int led = 27;
+```
+Defineix el pin 27 com el pin al que està conectat el LED.
